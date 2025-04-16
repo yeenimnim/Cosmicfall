@@ -104,6 +104,7 @@
     <button id="removeRow">줄 제거</button>
     <button id="toggleDark">다크모드</button>
     <button id="toggleNumbers">숫자 숨기기</button>
+    <button id="resetAll">전체 초기화</button>
   </div>
 
   <div class="abacus-container" id="abacusContainer">
@@ -116,6 +117,7 @@
     const removeRowBtn = document.getElementById('removeRow');
     const darkBtn = document.getElementById('toggleDark');
     const toggleNumbersBtn = document.getElementById('toggleNumbers');
+    const resetAllBtn = document.getElementById('resetAll');
 
     let reversed = false;
     let numbersHidden = false;
@@ -198,6 +200,12 @@
         num.style.display = numbersHidden ? 'none' : 'block';
       });
     }
+
+    // 전체 초기화 버튼 기능
+    resetAllBtn.addEventListener('click', () => {
+      const allBeads = abacusContainer.querySelectorAll('.bead');
+      allBeads.forEach(bead => bead.classList.remove('blurred'));
+    });
   </script>
 </body>
 </html>
