@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>스빠룬키</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* 수직 가운데 */
+      align-items: center;     /* 수평 가운데 */
+      background-color: #f0f0f0;
+      font-family: sans-serif;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .abacus-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .bead {
+      width: 80px;
+      height: 80px;
+      background-image: url('floor_cave.png');
+      background-size: cover;
+      background-position: center;
+      margin: 2px;
+      cursor: pointer;
+      transition: transform 0.3s, opacity 0.3s;
+      position: relative; /* 숫자가 버튼 위에 보이도록 하기 위해 필요 */
+    }
+
+    .moved {
+      transform: translateY(+90px);
+    }
+
+    .blurred {
+      opacity: 0.4;
+    }
+
+    .empty {
+      visibility: hidden;  /* 공간은 유지하되 보이지 않음 */
+    }
+
+    .number {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>코스믹 걸치기</h1>
+  <h1></h1><h1></h1>
+
+  <div class="abacus-row" id="row1">
+    <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
+    <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
+    <div class="bead empty"></div>
+    <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
+    <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
+  </div>
+
+  <script>
+    // 각 버튼에 숫자를 매핑할 배열 생성
+    let beads = document.querySelectorAll('.bead');
+    
+    // 1부터 9까지 순차적으로 숫자 추가
+    beads.forEach((bead, index) => {
+      if (!bead.classList.contains('empty')) {  // 빈 버튼은 제외
+        let number;
+        if (index >= 10 && index <= 20) {
+          // 10번부터 20번까지는 10부터 1까지 역순
+          number = document.createElement('div');
+          number.classList.add('number');
+          number.textContent = 10 - (index - 11);  // 10부터 1까지 역순
+        } else {
+          // 1부터 9까지는 순차적으로 증가
+          number = document.createElement('div');
+          number.classList.add('number');
+          number.textContent = index + 1;
+        }
+        
+        bead.appendChild(number); // 버튼에 숫자 추가
+      }
+      
+      bead.addEventListener('click', () => {
+        bead.classList.toggle('moved');
+        bead.classList.toggle('blurred');
+      });
+    });
+  </script>
+</body>
+</html>
