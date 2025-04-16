@@ -6,7 +6,7 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
+      padding: 40px 0; /* 위아래 여백 */
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -22,7 +22,7 @@
     }
 
     h1 {
-      margin: 20px 0 10px;
+      margin: 0 0 20px;
     }
 
     .buttons {
@@ -102,23 +102,20 @@
   <!-- 상단 컨트롤 버튼들 -->
   <div class="buttons">
     <button id="resetAllButton">전체 초기화</button>
-    <button id="reverseAllButton">전체 숫자 역순</button>
     <button id="darkModeButton">다크모드</button>
     <button id="addRowButton">1줄 추가</button>
+    <button id="removeRowButton">1줄 제거</button>
   </div>
 
   <!-- 전체 주판 줄을 담을 컨테이너 -->
   <div id="abacusContainer"></div>
 
   <script>
-    let totalCount = 0;
-    let globalReversed = false;
-
     const abacusContainer = document.getElementById('abacusContainer');
     const darkModeButton = document.getElementById('darkModeButton');
     const addRowButton = document.getElementById('addRowButton');
+    const removeRowButton = document.getElementById('removeRowButton');
     const resetAllButton = document.getElementById('resetAllButton');
-    const reverseAllButton = document.getElementById('reverseAllButton');
 
     // 비즈 생성
     function createBead(number) {
@@ -138,7 +135,7 @@
       return bead;
     }
 
-    // 줄 생성 함수 (기본: 10개)
+    // 줄 생성 함수 (숫자 1~10 고정)
     function addRow() {
       const rowWrapper = document.createElement('div');
       rowWrapper.classList.add('row-wrapper');
@@ -146,15 +143,10 @@
       const row = document.createElement('div');
       row.classList.add('abacus-row');
 
-      let rowReversed = globalReversed;
-
-      for (let i = 0; i < 10; i++) {
-        const number = rowReversed ? totalCount + 10 - i : totalCount + i + 1;
-        const bead = createBead(number);
+      for (let i = 1; i <= 10; i++) {
+        const bead = createBead(i);
         row.appendChild(bead);
       }
-
-      totalCount += 10;
 
       // 줄별 버튼
       const rowButtons = document.createElement('div');
@@ -171,8 +163,7 @@
       reverseBtn.textContent = "숫자 역순";
       reverseBtn.addEventListener('click', () => {
         const beads = row.querySelectorAll('.bead .number');
-        const current = Array.from(beads).map(b => parseInt(b.textContent));
-        const reversed = [...current].reverse();
+        const reversed = [...beads].map(b => b.textContent).reverse();
         beads.forEach((el, i) => el.textContent = reversed[i]);
       });
 
@@ -184,7 +175,7 @@
       abacusContainer.appendChild(rowWrapper);
     }
 
-    // 첫 줄 추가
+    // 첫 줄 생성
     addRow();
 
     // 전체 초기화
@@ -193,23 +184,22 @@
       allBeads.forEach(bead => bead.classList.remove('moved', 'blurred'));
     });
 
-    // 전체 역순
-    reverseAllButton.addEventListener('click', () => {
-      globalReversed = !globalReversed;
-      const allNumbers = document.querySelectorAll('.bead .number');
-      const current = Array.from(allNumbers).map(b => parseInt(b.textContent));
-      const reversed = [...current].reverse();
-      allNumbers.forEach((el, i) => el.textContent = reversed[i]);
-    });
-
-    // 다크모드 토글
+    // 다크모드
     darkModeButton.addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
     });
 
-    // 줄 추가 버튼
+    // 줄 추가
     addRowButton.addEventListener('click', () => {
       addRow();
+    });
+
+    // 줄 제거
+    removeRowButton.addEventListener('click', () => {
+      const rows = abacusContainer.querySelectorAll('.row-wrapper');
+      if (rows.length > 0) {
+        abacusContainer.removeChild(rows[rows.length - 1]);
+      }
     });
   </script>
 </body>
