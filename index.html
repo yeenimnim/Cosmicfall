@@ -7,10 +7,9 @@
     body {
       margin: 0;
       padding: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: start;
       align-items: center;
       background-color: #f0f0f0;
       font-family: sans-serif;
@@ -34,10 +33,17 @@
       justify-content: center;
     }
 
-    button {
-      padding: 10px 15px;
-      font-size: 14px;
-      cursor: pointer;
+    .row-wrapper {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .row-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-left: 10px;
     }
 
     .abacus-row {
@@ -45,7 +51,12 @@
       justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
     }
 
     .bead {
@@ -88,36 +99,36 @@
 <body>
   <h1>주판룬키</h1>
 
+  <!-- 상단 컨트롤 버튼들 -->
   <div class="buttons">
-    <button id="resetButton">초기화</button>
-    <button id="reverseButton">숫자 역순</button>
+    <button id="resetAllButton">전체 초기화</button>
+    <button id="reverseAllButton">전체 숫자 역순</button>
     <button id="darkModeButton">다크모드</button>
     <button id="addRowButton">1줄 추가</button>
   </div>
 
-  <div id="abacusContainer">
-    <div class="abacus-row"></div>
-  </div>
+  <!-- 전체 주판 줄을 담을 컨테이너 -->
+  <div id="abacusContainer"></div>
 
   <script>
-    let reversed = false;
-    let numberCount = 0;
+    let totalCount = 0;
+    let globalReversed = false;
 
     const abacusContainer = document.getElementById('abacusContainer');
-    const resetButton = document.getElementById('resetButton');
-    const reverseButton = document.getElementById('reverseButton');
     const darkModeButton = document.getElementById('darkModeButton');
     const addRowButton = document.getElementById('addRowButton');
+    const resetAllButton = document.getElementById('resetAllButton');
+    const reverseAllButton = document.getElementById('reverseAllButton');
 
-    // 숫자 할당
-    function createBead(index) {
+    // 비즈 생성
+    function createBead(number) {
       const bead = document.createElement('div');
       bead.classList.add('bead');
 
-      const number = document.createElement('div');
-      number.classList.add('number');
-      number.textContent = reversed ? numberCount - index : index + 1;
-      bead.appendChild(number);
+      const numberDiv = document.createElement('div');
+      numberDiv.classList.add('number');
+      numberDiv.textContent = number;
+      bead.appendChild(numberDiv);
 
       bead.addEventListener('click', () => {
         bead.classList.toggle('moved');
@@ -127,50 +138,76 @@
       return bead;
     }
 
-    // 줄 하나 추가
+    // 줄 생성 함수 (기본: 10개)
     function addRow() {
+      const rowWrapper = document.createElement('div');
+      rowWrapper.classList.add('row-wrapper');
+
       const row = document.createElement('div');
       row.classList.add('abacus-row');
 
-      const startIndex = numberCount;
+      let rowReversed = globalReversed;
+
       for (let i = 0; i < 10; i++) {
-        const bead = createBead(i + startIndex);
+        const number = rowReversed ? totalCount + 10 - i : totalCount + i + 1;
+        const bead = createBead(number);
         row.appendChild(bead);
       }
 
-      numberCount += 10;
-      abacusContainer.appendChild(row);
+      totalCount += 10;
+
+      // 줄별 버튼
+      const rowButtons = document.createElement('div');
+      rowButtons.classList.add('row-buttons');
+
+      const resetBtn = document.createElement('button');
+      resetBtn.textContent = "초기화";
+      resetBtn.addEventListener('click', () => {
+        const beads = row.querySelectorAll('.bead');
+        beads.forEach(bead => bead.classList.remove('moved', 'blurred'));
+      });
+
+      const reverseBtn = document.createElement('button');
+      reverseBtn.textContent = "숫자 역순";
+      reverseBtn.addEventListener('click', () => {
+        const beads = row.querySelectorAll('.bead .number');
+        const current = Array.from(beads).map(b => parseInt(b.textContent));
+        const reversed = [...current].reverse();
+        beads.forEach((el, i) => el.textContent = reversed[i]);
+      });
+
+      rowButtons.appendChild(resetBtn);
+      rowButtons.appendChild(reverseBtn);
+
+      rowWrapper.appendChild(row);
+      rowWrapper.appendChild(rowButtons);
+      abacusContainer.appendChild(rowWrapper);
     }
 
-    // 초기 줄 1개 추가
+    // 첫 줄 추가
     addRow();
 
-    // 초기화 버튼
-    resetButton.addEventListener('click', () => {
+    // 전체 초기화
+    resetAllButton.addEventListener('click', () => {
       const allBeads = document.querySelectorAll('.bead');
-      allBeads.forEach(bead => {
-        bead.classList.remove('moved', 'blurred');
-      });
+      allBeads.forEach(bead => bead.classList.remove('moved', 'blurred'));
     });
 
-    // 역순 버튼
-    reverseButton.addEventListener('click', () => {
-      reversed = !reversed;
-      const allBeads = document.querySelectorAll('.bead');
-      allBeads.forEach((bead, index) => {
-        const numDiv = bead.querySelector('.number');
-        if (numDiv) {
-          numDiv.textContent = reversed ? numberCount - index : index + 1;
-        }
-      });
+    // 전체 역순
+    reverseAllButton.addEventListener('click', () => {
+      globalReversed = !globalReversed;
+      const allNumbers = document.querySelectorAll('.bead .number');
+      const current = Array.from(allNumbers).map(b => parseInt(b.textContent));
+      const reversed = [...current].reverse();
+      allNumbers.forEach((el, i) => el.textContent = reversed[i]);
     });
 
-    // 다크모드 버튼
+    // 다크모드 토글
     darkModeButton.addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
     });
 
-    // 1줄 추가 버튼
+    // 줄 추가 버튼
     addRowButton.addEventListener('click', () => {
       addRow();
     });
