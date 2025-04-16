@@ -10,21 +10,39 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center; /* 수직 가운데 */
-      align-items: center;     /* 수평 가운데 */
+      justify-content: center;
+      align-items: center;
       background-color: #f0f0f0;
       font-family: sans-serif;
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    h2 {
-      margin-bottom: 20px;
+    body.dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .buttons {
+      margin-bottom: 30px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
     }
 
     .abacus-row {
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .bead {
@@ -36,7 +54,7 @@
       margin: 2px;
       cursor: pointer;
       transition: transform 0.3s, opacity 0.3s;
-      position: relative; /* 숫자가 버튼 위에 보이도록 하기 위해 필요 */
+      position: relative;
     }
 
     .moved {
@@ -45,10 +63,6 @@
 
     .blurred {
       opacity: 0.4;
-    }
-
-    .empty {
-      visibility: hidden;  /* 공간은 유지하되 보이지 않음 */
     }
 
     .number {
@@ -70,48 +84,70 @@
 </head>
 <body>
   <h1>코스믹 걸치기</h1>
-  <!-- 초기화 버튼 추가 -->
-  <button id="resetButton" style="margin-bottom: 30px; padding: 10px 20px; font-size: 16px;">초기화</button>
+  
+  <div class="buttons">
+    <button id="resetButton">초기화</button>
+    <button id="reverseButton">숫자 역순</button>
+    <button id="darkModeButton">다크모드</button>
+  </div>
 
   <div class="abacus-row" id="row1">
-    <!-- 기존 bead들 -->
-    <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
-    <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
-    <div class="bead empty"></div>
-    <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
-    <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
+    <!-- 10개의 bead -->
+    <div class="bead"></div>
+    <div class="bead"></div>
+    <div class="bead"></div>
+    <div class="bead"></div>
+    <div class="bead"></div>
+    <div class="bead"></div>
+    <div class="bead"></div>
+    <div class="bead"></div>
+    <div class="bead"></div>
+    <div class="bead"></div>
   </div>
 
   <script>
-    let beads = document.querySelectorAll('.bead');
+    const beads = document.querySelectorAll('.bead');
+    let reversed = false;
 
-    beads.forEach((bead, index) => {
-      if (!bead.classList.contains('empty')) {
-        let number;
-        if (index >= 10 && index <= 20) {
-          number = document.createElement('div');
-          number.classList.add('number');
-          number.textContent = 10 - (index - 11);
-        } else {
-          number = document.createElement('div');
-          number.classList.add('number');
-          number.textContent = index + 1;
-        }
-
+    // 숫자 부여 함수
+    function assignNumbers() {
+      beads.forEach((bead, index) => {
+        bead.innerHTML = ''; // 기존 숫자 제거
+        const number = document.createElement('div');
+        number.classList.add('number');
+        number.textContent = reversed ? (10 - index) : (index + 1);
         bead.appendChild(number);
-      }
+      });
+    }
 
+    // 초기 숫자 부여
+    assignNumbers();
+
+    // 클릭 이벤트 등록
+    beads.forEach(bead => {
       bead.addEventListener('click', () => {
         bead.classList.toggle('moved');
         bead.classList.toggle('blurred');
       });
     });
 
-    // 초기화 버튼 클릭 이벤트
+    // 초기화 버튼
     document.getElementById('resetButton').addEventListener('click', () => {
       beads.forEach(bead => {
         bead.classList.remove('moved', 'blurred');
       });
     });
+
+    // 숫자 역순 버튼
+    document.getElementById('reverseButton').addEventListener('click', () => {
+      reversed = !reversed;
+      assignNumbers();
+    });
+
+    // 다크모드 버튼
+    document.getElementById('darkModeButton').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
   </script>
 </body>
+</html>
