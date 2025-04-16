@@ -28,6 +28,7 @@
       gap: 10px;
       margin: 0 auto 20px;
       width: 80%;
+      flex-wrap: wrap;
     }
 
     button {
@@ -53,43 +54,39 @@
     }
 
     .abacus-row {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.3); /* 위에서 아래로 변경 */
-  width: 100%;
-}
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+      width: 100%;
+    }
 
-
-.bead {
-  width: 80px;
-  height: 80px;
-  background-image: url('floor_cave.png');
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
-  transition: opacity 0.3s;
-  position: relative;
-  display: flex;              /* 숫자를 안에 가운데 정렬 */
-  justify-content: center;
-  align-items: center;
-}
+    .bead {
+      width: 80px;
+      height: 80px;
+      background-image: url('floor_cave.png');
+      background-size: cover;
+      background-position: center;
+      cursor: pointer;
+      transition: opacity 0.3s;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
     .blurred {
       opacity: 0.4;
     }
 
     .number {
-  position: static;           /* 더 이상 absolute 아님 */
-  font-size: 46px;            /* 숫자 크게 */
-  background: none;           /* 배경 제거 */
-  color: white;               /* 밝은 배경 대비 */
-  font-weight: bold;
-}
-
-    
+      font-size: 46px;
+      background: none;
+      color: white;
+      font-weight: bold;
+    }
 
     .row-buttons {
       margin-left: 0;
@@ -106,6 +103,7 @@
     <button id="addRow">줄 추가</button>
     <button id="removeRow">줄 제거</button>
     <button id="toggleDark">다크모드</button>
+    <button id="toggleNumbers">숫자 숨기기</button>
   </div>
 
   <div class="abacus-container" id="abacusContainer">
@@ -117,8 +115,10 @@
     const addRowBtn = document.getElementById('addRow');
     const removeRowBtn = document.getElementById('removeRow');
     const darkBtn = document.getElementById('toggleDark');
+    const toggleNumbersBtn = document.getElementById('toggleNumbers');
 
     let reversed = false;
+    let numbersHidden = false;
 
     function createBead(index) {
       const bead = document.createElement('div');
@@ -172,6 +172,7 @@
 
     addRowBtn.addEventListener('click', () => {
       createRow();
+      applyNumberVisibility(); // 새 줄에도 숫자 숨기기 적용
     });
 
     removeRowBtn.addEventListener('click', () => {
@@ -184,6 +185,19 @@
     darkBtn.addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
     });
+
+    toggleNumbersBtn.addEventListener('click', () => {
+      numbersHidden = !numbersHidden;
+      applyNumberVisibility();
+      toggleNumbersBtn.textContent = numbersHidden ? '숫자 보이기' : '숫자 숨기기';
+    });
+
+    function applyNumberVisibility() {
+      const numbers = abacusContainer.querySelectorAll('.number');
+      numbers.forEach(num => {
+        num.style.display = numbersHidden ? 'none' : 'block';
+      });
+    }
   </script>
 </body>
 </html>
