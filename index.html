@@ -70,9 +70,11 @@
 </head>
 <body>
   <h1>코스믹 걸치기</h1>
-  <h1></h1><h1></h1>
+  <!-- 초기화 버튼 추가 -->
+  <button id="resetButton" style="margin-bottom: 30px; padding: 10px 20px; font-size: 16px;">초기화</button>
 
   <div class="abacus-row" id="row1">
+    <!-- 기존 bead들 -->
     <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
     <div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div><div class="bead"></div>
     <div class="bead empty"></div>
@@ -81,33 +83,35 @@
   </div>
 
   <script>
-    // 각 버튼에 숫자를 매핑할 배열 생성
     let beads = document.querySelectorAll('.bead');
-    
-    // 1부터 9까지 순차적으로 숫자 추가
+
     beads.forEach((bead, index) => {
-      if (!bead.classList.contains('empty')) {  // 빈 버튼은 제외
+      if (!bead.classList.contains('empty')) {
         let number;
         if (index >= 10 && index <= 20) {
-          // 10번부터 20번까지는 10부터 1까지 역순
           number = document.createElement('div');
           number.classList.add('number');
-          number.textContent = 10 - (index - 11);  // 10부터 1까지 역순
+          number.textContent = 10 - (index - 11);
         } else {
-          // 1부터 9까지는 순차적으로 증가
           number = document.createElement('div');
           number.classList.add('number');
           number.textContent = index + 1;
         }
-        
-        bead.appendChild(number); // 버튼에 숫자 추가
+
+        bead.appendChild(number);
       }
-      
+
       bead.addEventListener('click', () => {
         bead.classList.toggle('moved');
         bead.classList.toggle('blurred');
       });
     });
+
+    // 초기화 버튼 클릭 이벤트
+    document.getElementById('resetButton').addEventListener('click', () => {
+      beads.forEach(bead => {
+        bead.classList.remove('moved', 'blurred');
+      });
+    });
   </script>
 </body>
-</html>
